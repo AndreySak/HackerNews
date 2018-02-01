@@ -1,0 +1,21 @@
+
+/* Class = "UILabel"; text = "LabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabel"; ObjectID = "0Sc-mI-c95"; */
+"0Sc-mI-c95.text" = "LabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabel";
+
+/* Class = "UILabel"; text = "fwefwefwefwefwefwefwefwefwefweffwefwefwefwefwefwefwefwefwefwef"; ObjectID = "8qx-tO-zzF"; */
+"8qx-tO-zzF.text" = "fwefwefwefwefwefwefwefwefwefweffwefwefwefwefwefwefwefwefwefwef";
+
+/* Class = "UINavigationItem"; title = "Stories"; ObjectID = "FiV-kT-wO5"; */
+"FiV-kT-wO5.title" = "Stories";
+
+/* Class = "UIViewController"; title = "Story Detail"; ObjectID = "Neo-mr-cEq"; */
+"Neo-mr-cEq.title" = "Story Detail";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Z4F-pE-2a1"; */
+"Z4F-pE-2a1.text" = "Label";
+
+/* Class = "UISegmentedControl"; ZfL-5P-j6Q.segmentTitles[0] = "First"; ObjectID = "ZfL-5P-j6Q"; */
+"ZfL-5P-j6Q.segmentTitles[0]" = "First";
+
+/* Class = "UISegmentedControl"; ZfL-5P-j6Q.segmentTitles[1] = "Second"; ObjectID = "ZfL-5P-j6Q"; */
+"ZfL-5P-j6Q.segmentTitles[1]" = "Second";

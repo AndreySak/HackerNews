@@ -23,6 +23,8 @@ class NetworkManagerImpl : NetworkManager {
     
     private enum Constants {
         static let defaultRequestTimeInterval: TimeInterval = 60.0
+        static let memoryCacheCapacity: Int = 4 * 1024 * 1024
+        static let diskCacheCapacity: Int = 20 * 1024 * 1024
     }
     
     private enum NetworkError : Error {
@@ -31,7 +33,7 @@ class NetworkManagerImpl : NetworkManager {
         var localizedDescription: String {
             switch self {
             case .badRequest:
-                return "Bad request"
+                return "Bad request".localized
             }
         }
     }
@@ -44,7 +46,13 @@ class NetworkManagerImpl : NetworkManager {
     
     init() {
         let configuration = URLSessionConfiguration.default
+        
+        let urlCache = URLCache(memoryCapacity: Constants.memoryCacheCapacity,
+                                diskCapacity: Constants.diskCacheCapacity,
+                                diskPath: nil)
+        configuration.urlCache = urlCache
         configuration.requestCachePolicy = .returnCacheDataElseLoad
+        
         session = URLSession(configuration: configuration)
     }
     

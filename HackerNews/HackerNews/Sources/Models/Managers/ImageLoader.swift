@@ -13,7 +13,6 @@ protocol ImageLoader {
 }
 
 class ImageLoaderIml : ImageLoader {
-    
     let networkManager: NetworkManager
     
     init(networkManager: NetworkManager) {

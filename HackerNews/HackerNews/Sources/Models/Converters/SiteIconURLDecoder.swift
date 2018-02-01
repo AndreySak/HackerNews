@@ -9,8 +9,10 @@
 import Foundation
 
 class SiteIconURLDecoder {
-    private static let serverAddressRegexPattern: String = "^(?:www\\.)?(.*?)\\.(?:com|au\\.uk|co\\.in)"
-    private static let siteIconNames: [String] = ["touchicon.ico", "favicon.ico", "touch-icon.ico", "fav-icon.ico"]
+    private enum Constans {
+        static let serverAddressRegexPattern: String = "^(?:www\\.)?(.*?)\\.(?:com|au\\.uk|co\\.in)"
+        static let siteIconNames: [String] = ["touchicon.ico", "favicon.ico", "touch-icon.ico", "fav-icon.ico"]
+    }
     
     class func decodeFromURL(_ url: URL) -> [URL] {
         let urlString = url.absoluteString
@@ -21,7 +23,7 @@ class SiteIconURLDecoder {
         
         var resultUrls: [URL] = []
         
-        SiteIconURLDecoder.siteIconNames.forEach { iconName in
+        Constans.siteIconNames.forEach { iconName in
             let iconURLString = "\(serverAddress)/\(iconName)"
             if let iconURL = URL(string: iconURLString) {
                 resultUrls.append(iconURL)
@@ -34,7 +36,7 @@ class SiteIconURLDecoder {
     private class func getRegexMatches(formUrlString urlString: String) -> [String] {
         do {
             
-            let regex = try NSRegularExpression(pattern: SiteIconURLDecoder.serverAddressRegexPattern)
+            let regex = try NSRegularExpression(pattern: Constans.serverAddressRegexPattern)
             let results = regex.matches(in: urlString,
                                         range: NSRange(urlString.startIndex..., in: urlString))
             

@@ -31,7 +31,6 @@ open class AsyncOperation: Operation {
 
 
 extension AsyncOperation {
-    // NSOperation Overrides
     override open var isReady: Bool {
         return super.isReady && state == .ready
     }
@@ -132,7 +131,8 @@ class StoryImageDownloadOperation : AsyncOperation {
         super.cancel()
     }
     
-    private func getStorySourceImage(fromURL url: URL?, completion: @escaping (UIImage?) -> Swift.Void) -> RequestHanlder? {
+    private func getStorySourceImage(fromURL url: URL?,
+                                     completion: @escaping (UIImage?) -> Swift.Void) -> RequestHanlder? {
         guard let url = url else {
             return nil
         }

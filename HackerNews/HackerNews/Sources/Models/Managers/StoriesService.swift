@@ -66,7 +66,7 @@ class StoriesServiceImpl : StoriesService {
     }
     
     private func getStoriesPath(fromStorySource storySource: StorySource) -> String {
-        var storiesPath: String = ""
+        var storiesPath: String = String.emptyString
         
         switch storySource {
         case .new:

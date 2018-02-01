@@ -6,7 +6,9 @@
   Copyright © 2018 Itransition. All rights reserved.
 */
 
-"NoDescriptionForPieceOfNews" = "Reee";
-"New" = "new";
-"Top" = "top";
-"Best" = "best";
+"NoDescriptionForPieceOfNews" = "Нет новости, прости :[";
+"New" = "новые";
+"Top" = "топ";
+"Best" = "лучшие";
+"No more stories" = "Больше историй не нашлось";
+"Bad request" = "Что-то пошло не так";

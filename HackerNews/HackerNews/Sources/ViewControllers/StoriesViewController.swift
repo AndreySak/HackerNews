@@ -16,8 +16,10 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
         static let storiesPageCount: Int = 20
         static let storyRowHeight: CGFloat = 60
         static let storiesTableViewFooterHeight: CGFloat = 60
-        static let noMoreStoriesMessage: String = "No more stories"
+        static let noMoreStoriesMessage: String = "No more stories".localized
         static let showPostDetailsSegueIdentifier: String = "showPostDetails"
+        static let contentOffsetKeyPath: String = "contentOffset"
+        static let contentOffsetForLoadingMoreData: CGFloat = 10.0
     }
     
     @IBOutlet weak var storiesTableView: UITableView!
@@ -35,12 +37,20 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
     private var stories: [Story] = []
     private var storiesImages: [Story : UIImage?] = [:]
     
+    private var shouldShowFooter: Bool = false
+    private var isDecelerating: Bool = false
+    private var insertRowsDispatchWorkItem: DispatchWorkItem?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         storiesTableView.rowHeight = Constants.storyRowHeight
         storiesTableView.tableFooterView = UIView()
         storiesTableView.tableHeaderView = UIView()
+        storiesTableView.addObserver(self,
+                                     forKeyPath: Constants.contentOffsetKeyPath,
+                                     options: NSKeyValueObservingOptions.new,
+                                     context: nil)
         
         networkManager = NetworkManagerImpl()
         storiesService = StoriesServiceImpl(networkManager: networkManager)
@@ -89,6 +99,33 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
         let selectedStorySource = Constants.storiesSources[selectedSourceIndex]
         clearDataAndReload()
         getStoriesIds(withStorySource: selectedStorySource)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?,
+                               change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard keyPath == Constants.contentOffsetKeyPath,
+            let scrollView = object as? UIScrollView else {
+                return
+        }
+        
+        if scrollView.contentOffset.y + scrollView.frame.size.height
+            >= scrollView.contentSize.height - Constants.contentOffsetForLoadingMoreData {
+            loadMoreData()
+        }
+    }
+    
+    // MARK: - ScrollViewDelegate
+    
+    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        isDecelerating = true
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        isDecelerating = false
+        if let insertRowsDispatchWorkItem = insertRowsDispatchWorkItem {
+            DispatchQueue.main.async(execute: insertRowsDispatchWorkItem)
+            self.insertRowsDispatchWorkItem = nil
+        }
     }
     
     // MARK: - UITableViewDataSource
@@ -183,18 +220,31 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
                 return
             }
             
-            strongSelf.disableRefreshControlIfNeeded()
-            strongSelf.setActivityIndicatorState(hidden: true)
-            let newStoriesStartIndex = strongSelf.stories.count
-            strongSelf.stories.append(contentsOf: stories)
-            
-            DispatchQueue.main.async {
-                (strongSelf.storiesTableView.tableFooterView as? UIActivityIndicatorView)?.stopAnimating()
+            let insertRowsDispatchWorkItem = DispatchWorkItem {
+                strongSelf.disableRefreshControlIfNeeded()
+                strongSelf.setActivityIndicatorState(hidden: true)
+                
+                let newStoriesStartIndex = strongSelf.stories.count
+                
+                if let footerActivityView = strongSelf.storiesTableView.tableFooterView as? UIActivityIndicatorView {
+                    footerActivityView.stopAnimating()
+                    strongSelf.storiesTableView.tableFooterView = nil
+                }
+                
+                strongSelf.stories.append(contentsOf: stories)
                 var indexPaths: [IndexPath] = []
                 for i in newStoriesStartIndex..<strongSelf.stories.count {
                     indexPaths.append(IndexPath(row: i, section: 0))
                 }
                 strongSelf.storiesTableView.insertRows(at: indexPaths, with: .automatic)
+                
+                strongSelf.shouldShowFooter = true
+            }
+            
+            if strongSelf.isDecelerating {
+                strongSelf.insertRowsDispatchWorkItem = insertRowsDispatchWorkItem
+            } else {
+                DispatchQueue.main.async(execute: insertRowsDispatchWorkItem)
             }
         }
     }
@@ -212,6 +262,10 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
             self.storyIds = []
             self.stories = []
             self.storiesTableView.reloadData()
+            self.storiesTableView.tableFooterView = nil
+            self.shouldShowFooter = false
+            self.isDecelerating = false
+            self.insertRowsDispatchWorkItem = nil
         }
     }
     
@@ -227,6 +281,11 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
     }
     
     private func loadMoreData() {
+        guard shouldShowFooter else {
+            return
+        }
+        
+        shouldShowFooter = false
         let bottomViewRect = CGRect(x: 0.0,
                                     y: 0.0,
                                     width: storiesTableView.frame.width,
@@ -247,6 +306,7 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
             noMoreDataLabel.textAlignment = .center
             
             footerView = noMoreDataLabel
+            shouldShowFooter = false
         }
         
         storiesTableView.tableFooterView = footerView
@@ -258,11 +318,5 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
             upperBoundForStoryIds = storyIds.count
         }
         getStories(withStoryIds: [Int](storyIds[stories.count..<upperBoundForStoryIds]))
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y + scrollView.frame.size.height == scrollView.contentSize.height {
-            loadMoreData()
-        }
     }
 }
