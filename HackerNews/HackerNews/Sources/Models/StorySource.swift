@@ -18,11 +18,11 @@ extension StorySource {
     var localizedName: String {
         switch self {
         case .new:
-            return "New"
+            return "New".localized.capitalized
         case .top:
-            return "Top"
+            return "Top".localized.capitalized
         case .best:
-            return "Best"
+            return "Best".localized.capitalized
         }
     }
 }

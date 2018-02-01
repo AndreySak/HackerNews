@@ -8,8 +8,11 @@
 
 import UIKit
 
-class StoryTableViewCell : UITableViewCell {
-    private static let defaultSourceImage: UIImage = #imageLiteral(resourceName: "newspaper")
+class StoryTableViewCell : UITableViewCell, ReusableView {
+    private enum Constatns {
+        static let defaultSourceImage: UIImage = #imageLiteral(resourceName: "newspaper")
+        static let sourceImageCornerRadius: CGFloat = 4.0
+    }
     
     @IBOutlet private weak var sourceImageView: UIImageView!
     @IBOutlet private weak var storyTitleLabel: UILabel!
@@ -17,7 +20,7 @@ class StoryTableViewCell : UITableViewCell {
     var sourceImage: UIImage? {
         didSet {
             DispatchQueue.main.async {
-                self.sourceImageView.image = self.sourceImage ?? StoryTableViewCell.defaultSourceImage
+                self.sourceImageView.image = self.sourceImage ?? Constatns.defaultSourceImage
             }
         }
     }
@@ -29,19 +32,19 @@ class StoryTableViewCell : UITableViewCell {
             }
         }
     }
-    
+        
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        sourceImageView.layer.cornerRadius = 4.0
+        sourceImageView.layer.cornerRadius = Constatns.sourceImageCornerRadius
         sourceImageView.clipsToBounds = true
-        sourceImageView.image = StoryTableViewCell.defaultSourceImage
+        sourceImageView.image = Constatns.defaultSourceImage
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
         storyTitleLabel.text = nil
-        sourceImageView.image = StoryTableViewCell.defaultSourceImage
+        sourceImageView.image = Constatns.defaultSourceImage
     }
 }

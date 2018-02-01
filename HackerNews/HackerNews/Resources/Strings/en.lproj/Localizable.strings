@@ -1,0 +1,12 @@
+/* 
+  Localized.strings
+  HackerNews
+
+  Created by Andrey Sak on 2/1/18.
+  Copyright © 2018 Itransition. All rights reserved.
+*/
+
+"NoDescriptionForPieceOfNews" = "There is currently no description for this piece of news, check it out later";
+"New" = "new";
+"Top" = "top";
+"Best" = "best";

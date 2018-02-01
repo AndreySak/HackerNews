@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		DB784EA520226B0000C979DC /* StoryDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB784EA420226B0000C979DC /* StoryDownloadOperation.swift */; };
+		DB784EA72023026500C979DC /* ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB784EA62023026500C979DC /* ReusableView.swift */; };
+		DB784EAC2023086200C979DC /* StoriesDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB784EAB2023086200C979DC /* StoriesDownloadManager.swift */; };
+		DB784EAE202308E700C979DC /* String+Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB784EAD202308E700C979DC /* String+Localized.swift */; };
+		DB784EB520230AF800C979DC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DB784EB720230AF800C979DC /* Localizable.strings */; };
 		DB8AEC312020BC0200E4B46B /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AEC302020BC0200E4B46B /* NetworkManager.swift */; };
 		DB8AEC332020BCD200E4B46B /* StoriesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AEC322020BCD200E4B46B /* StoriesService.swift */; };
 		DB8AEC352020C02A00E4B46B /* StorySource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AEC342020C02A00E4B46B /* StorySource.swift */; };
@@ -26,6 +30,11 @@
 
 /* Begin PBXFileReference section */
 		DB784EA420226B0000C979DC /* StoryDownloadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDownloadOperation.swift; sourceTree = "<group>"; };
+		DB784EA62023026500C979DC /* ReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableView.swift; sourceTree = "<group>"; };
+		DB784EAB2023086200C979DC /* StoriesDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesDownloadManager.swift; sourceTree = "<group>"; };
+		DB784EAD202308E700C979DC /* String+Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localized.swift"; sourceTree = "<group>"; };
+		DB784EB620230AF800C979DC /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DB784EB820230B0A00C979DC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DB8AEC302020BC0200E4B46B /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		DB8AEC322020BCD200E4B46B /* StoriesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesService.swift; sourceTree = "<group>"; };
 		DB8AEC342020C02A00E4B46B /* StorySource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySource.swift; sourceTree = "<group>"; };
@@ -55,6 +64,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DB784EA8202307B500C979DC /* Strings */ = {
+			isa = PBXGroup;
+			children = (
+				DB784EB720230AF800C979DC /* Localizable.strings */,
+			);
+			path = Strings;
+			sourceTree = "<group>";
+		};
 		DBC676D720208BD800F97B5A = {
 			isa = PBXGroup;
 			children = (
@@ -112,6 +129,9 @@
 				DBFE5D402021B590003F87C6 /* SiteIconURLDecoder.swift */,
 				DBFE5D422021EC02003F87C6 /* HTMLToAttributedStringConverter.swift */,
 				DB784EA420226B0000C979DC /* StoryDownloadOperation.swift */,
+				DB784EA62023026500C979DC /* ReusableView.swift */,
+				DB784EAB2023086200C979DC /* StoriesDownloadManager.swift */,
+				DB784EAD202308E700C979DC /* String+Localized.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -138,6 +158,7 @@
 			children = (
 				DBC6770120208C3900F97B5A /* Assets.xcassets */,
 				DBC6770220208C3900F97B5A /* Info.plist */,
+				DB784EA8202307B500C979DC /* Strings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -185,6 +206,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = DBC676D720208BD800F97B5A;
 			productRefGroup = DBC676E120208BD800F97B5A /* Products */;
@@ -201,6 +223,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB784EB520230AF800C979DC /* Localizable.strings in Resources */,
 				DBC6770320208C3900F97B5A /* LaunchScreen.storyboard in Resources */,
 				DBC6770720208C3900F97B5A /* Assets.xcassets in Resources */,
 				DBC6770420208C3900F97B5A /* Main.storyboard in Resources */,
@@ -215,12 +238,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBC6770620208C3900F97B5A /* AppDelegate.swift in Sources */,
+				DB784EAC2023086200C979DC /* StoriesDownloadManager.swift in Sources */,
 				DB784EA520226B0000C979DC /* StoryDownloadOperation.swift in Sources */,
 				DB8AEC312020BC0200E4B46B /* NetworkManager.swift in Sources */,
 				DB8AEC352020C02A00E4B46B /* StorySource.swift in Sources */,
 				DBC6770A20208CBD00F97B5A /* StoryDetailViewController.swift in Sources */,
 				DB8AEC332020BCD200E4B46B /* StoriesService.swift in Sources */,
 				DBFE5D432021EC02003F87C6 /* HTMLToAttributedStringConverter.swift in Sources */,
+				DB784EA72023026500C979DC /* ReusableView.swift in Sources */,
+				DB784EAE202308E700C979DC /* String+Localized.swift in Sources */,
 				DB8AEC3920211BFE00E4B46B /* ImageLoader.swift in Sources */,
 				DBC6770520208C3900F97B5A /* StoriesViewController.swift in Sources */,
 				DBC6770C202093D100F97B5A /* Story.swift in Sources */,
@@ -232,6 +258,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		DB784EB720230AF800C979DC /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DB784EB620230AF800C979DC /* ru */,
+				DB784EB820230B0A00C979DC /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		DBC676F720208C3900F97B5A /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -255,6 +290,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -312,6 +348,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";

@@ -8,28 +8,17 @@
 
 import UIKit
 
-class DownloadOperations {
-    let storiesQueue: OperationQueue
-    let storiesImageQueue: OperationQueue
-    
-    init() {
-        storiesQueue = OperationQueue()
-        storiesQueue.name = "Download stories queue"
-        storiesQueue.maxConcurrentOperationCount = 10
-        
-        storiesImageQueue = OperationQueue()
-        storiesImageQueue.name = "Download stories images queue"
-        storiesImageQueue.maxConcurrentOperationCount = 10
-    }
-}
-
 class StoriesViewController : UIViewController, UITableViewDataSource, UITableViewDelegate {
-    private static let storiesSources: [StorySource] = [.new, .top, .best]
-    private static let defaultSelectedStorySource: StorySource = .new
-    private static let invalidSegmentedControllIndex: Int = -1
-    private static let storiesPageCount: Int = 20
-    private static let storyRowHeight: CGFloat = 60
-    private static let storiesTableViewFooterHeight: CGFloat = 60
+    private enum Constants {
+        static let storiesSources: [StorySource] = [.new, .top, .best]
+        static let defaultSelectedStorySource: StorySource = .new
+        static let invalidSegmentedControllIndex: Int = -1
+        static let storiesPageCount: Int = 20
+        static let storyRowHeight: CGFloat = 60
+        static let storiesTableViewFooterHeight: CGFloat = 60
+        static let noMoreStoriesMessage: String = "No more stories"
+        static let showPostDetailsSegueIdentifier: String = "showPostDetails"
+    }
     
     @IBOutlet weak var storiesTableView: UITableView!
     @IBOutlet weak var storiesSourceSegmentedControl: UISegmentedControl!
@@ -38,35 +27,36 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
     private var refreshControl = UIRefreshControl()
     
     private var storiesService: StoriesService!
-    private var imageLoader: ImageLoader!
     private var networkManager: NetworkManager!
+    
+    private var storiesDownloadManager: StoriesDownloadManager!
     
     private var storyIds: [Int] = []
     private var stories: [Story] = []
     private var storiesImages: [Story : UIImage?] = [:]
-    private let downloadOperaions = DownloadOperations()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        storiesTableView.rowHeight = StoriesViewController.storyRowHeight
+        storiesTableView.rowHeight = Constants.storyRowHeight
         storiesTableView.tableFooterView = UIView()
         storiesTableView.tableHeaderView = UIView()
         
         networkManager = NetworkManagerImpl()
         storiesService = StoriesServiceImpl(networkManager: networkManager)
-        imageLoader = ImageLoaderIml(networkManager: networkManager)
+        let imageLoader = ImageLoaderIml(networkManager: networkManager)
+        storiesDownloadManager = StoriesDownloadManager(storiesService: storiesService, imageLoader: imageLoader)
         
         configureRefreshControl()
         
-        let defaultSelectedStorySource = StoriesViewController.defaultSelectedStorySource
-        configureSegmentedControl(withStorySources: StoriesViewController.storiesSources,
+        let defaultSelectedStorySource = Constants.defaultSelectedStorySource
+        configureSegmentedControl(withStorySources: Constants.storiesSources,
                                   selectedStorySource: defaultSelectedStorySource)
         getStoriesIds(withStorySource: defaultSelectedStorySource)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showPostDetails",
+        if segue.identifier == Constants.showPostDetailsSegueIdentifier,
             let storyDetailsVC = segue.destination as? StoryDetailViewController,
             let story = sender as? Story {
             storyDetailsVC.setupStory(story)
@@ -76,11 +66,11 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
     @objc func refresh(sender: AnyObject) {
         let selectedSourceIndex = storiesSourceSegmentedControl.selectedSegmentIndex
         
-        guard selectedSourceIndex != StoriesViewController.invalidSegmentedControllIndex else {
+        guard selectedSourceIndex != Constants.invalidSegmentedControllIndex else {
             return
         }
         
-        let selectedStorySource = StoriesViewController.storiesSources[selectedSourceIndex]
+        let selectedStorySource = Constants.storiesSources[selectedSourceIndex]
         
         getStoriesIds(withStorySource: selectedStorySource)
     }
@@ -92,11 +82,11 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
         
         let selectedSourceIndex = segmentedControl.selectedSegmentIndex
         
-        guard selectedSourceIndex != StoriesViewController.invalidSegmentedControllIndex else {
+        guard selectedSourceIndex != Constants.invalidSegmentedControllIndex else {
             return
         }
         
-        let selectedStorySource = StoriesViewController.storiesSources[selectedSourceIndex]
+        let selectedStorySource = Constants.storiesSources[selectedSourceIndex]
         clearDataAndReload()
         getStoriesIds(withStorySource: selectedStorySource)
     }
@@ -108,14 +98,14 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return tableView.dequeueReusableCell(withIdentifier: "StoryTableViewCell", for: indexPath)
+        return tableView.dequeueReusableCell(withIdentifier: StoryTableViewCell.reuseIdentifier, for: indexPath)
     }
     
     // MARK: - UITableViewDelegate
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedStory = stories[indexPath.row]
-        performSegue(withIdentifier: "showPostDetails", sender: selectedStory)
+        performSegue(withIdentifier: Constants.showPostDetailsSegueIdentifier, sender: selectedStory)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -127,18 +117,15 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
         cell.storyTitle = story.title
         if let storyImage = storiesImages[story] {
             cell.sourceImage = storyImage
-        } else if let storyURL = story.url {
-            let storyImageDownloadOperation = StoryImageDownloadOperation(storyURL: storyURL,
-                                                                          imageLoader: imageLoader)
-            storyImageDownloadOperation.completionBlock = { [weak self] in
+        } else if let storyURL = story.url {            
+            storiesDownloadManager.downloadStoryImage(withStoryURL: storyURL) { [weak self] storySourceImage in
                 guard let strongSelf = self else {
                     return
                 }
                 
-                strongSelf.storiesImages[story] = storyImageDownloadOperation.resultImage
-                cell.sourceImage = storyImageDownloadOperation.resultImage
+                strongSelf.storiesImages[story] = storySourceImage
+                cell.sourceImage = storySourceImage
             }
-            downloadOperaions.storiesQueue.addOperation(storyImageDownloadOperation)
         }
     }
     
@@ -148,15 +135,8 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
         }
         
         let story = stories[indexPath.row]
-        if let storyURL = story.url,
-            let storyImageDownloadOperation = downloadOperaions.storiesImageQueue.operations.first(where: { operation -> Bool in
-                guard let downloadStoryImageOperation = operation as? StoryImageDownloadOperation else {
-                    return false
-                }
-                
-                return downloadStoryImageOperation.storyURL == storyURL
-            }) {
-            storyImageDownloadOperation.cancel()
+        if let storyURL = story.url {
+            storiesDownloadManager.cancelDownloadStoryImage(withStoryURL: storyURL)
         }
     }
     
@@ -169,7 +149,8 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
     
     private func configureSegmentedControl(withStorySources storySources: [StorySource], selectedStorySource: StorySource) {
         storiesSourceSegmentedControl.removeAllSegments()
-        storiesSourceSegmentedControl.setTitleTextAttributes([NSAttributedStringKey.foregroundColor : UIColor.white], for: .selected)
+        storiesSourceSegmentedControl.setTitleTextAttributes([NSAttributedStringKey.foregroundColor : UIColor.white],
+                                                             for: .selected)
         
         storySources.enumerated().forEach { (index, storySource) in
             storiesSourceSegmentedControl.insertSegment(withTitle: storySource.localizedName,
@@ -191,38 +172,29 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
 
             if let storyIds = storyIds {
                 strongSelf.storyIds = storyIds
-                strongSelf.getStories(withStoryIds: [Int](storyIds[..<StoriesViewController.storiesPageCount]))
+                strongSelf.getStories(withStoryIds: [Int](storyIds[..<Constants.storiesPageCount]))
             }
         }
     }
     
     private func getStories(withStoryIds storyIds: [Int]) {
-        var stories: [Story] = []
-        let storyDownloadOperations = storyIds.map({ storyId -> StoryDownloadOperation in
-            let storyDownloadOperaion = StoryDownloadOperation(storyId: storyId,
-                                                               storiesService: storiesService)
-            storyDownloadOperaion.completionBlock = {
-                if let story = storyDownloadOperaion.story {
-                    stories.append(story)
-                }
+        storiesDownloadManager.downloadStories(withStoryIds: storyIds) { [weak self] stories in
+            guard let strongSelf = self else {
+                return
             }
-            return storyDownloadOperaion
-        })
-        
-        DispatchQueue.global(qos: .userInteractive).async {
-            self.downloadOperaions.storiesQueue.addOperations(storyDownloadOperations,
-                                                               waitUntilFinished: true)
-            self.disableRefreshControlIfNeeded()
-            self.setActivityIndicatorState(hidden: true)
-            let startIndex = self.stories.count
-            self.stories.append(contentsOf: stories)
+            
+            strongSelf.disableRefreshControlIfNeeded()
+            strongSelf.setActivityIndicatorState(hidden: true)
+            let newStoriesStartIndex = strongSelf.stories.count
+            strongSelf.stories.append(contentsOf: stories)
+            
             DispatchQueue.main.async {
-                (self.storiesTableView.tableFooterView as? UIActivityIndicatorView)?.stopAnimating()
+                (strongSelf.storiesTableView.tableFooterView as? UIActivityIndicatorView)?.stopAnimating()
                 var indexPaths: [IndexPath] = []
-                for i in startIndex..<self.stories.count {
+                for i in newStoriesStartIndex..<strongSelf.stories.count {
                     indexPaths.append(IndexPath(row: i, section: 0))
                 }
-                self.storiesTableView.insertRows(at: indexPaths, with: .automatic)
+                strongSelf.storiesTableView.insertRows(at: indexPaths, with: .automatic)
             }
         }
     }
@@ -258,7 +230,7 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
         let bottomViewRect = CGRect(x: 0.0,
                                     y: 0.0,
                                     width: storiesTableView.frame.width,
-                                    height: StoriesViewController.storiesTableViewFooterHeight)
+                                    height: Constants.storiesTableViewFooterHeight)
         var footerView: UIView!
         
         if stories.count < storyIds.count {
@@ -271,17 +243,17 @@ class StoriesViewController : UIViewController, UITableViewDataSource, UITableVi
             loadNextStories()
         } else {
             let noMoreDataLabel = UILabel(frame: bottomViewRect)
-            noMoreDataLabel.text = "No more stories"
+            noMoreDataLabel.text = Constants.noMoreStoriesMessage
             noMoreDataLabel.textAlignment = .center
             
             footerView = noMoreDataLabel
         }
         
-        self.storiesTableView.tableFooterView = acitivtyIndicatorView
+        storiesTableView.tableFooterView = footerView
     }
     
     private func loadNextStories() {
-        var upperBoundForStoryIds = stories.count + StoriesViewController.storiesPageCount
+        var upperBoundForStoryIds = stories.count + Constants.storiesPageCount
         if upperBoundForStoryIds > storyIds.count {
             upperBoundForStoryIds = storyIds.count
         }
