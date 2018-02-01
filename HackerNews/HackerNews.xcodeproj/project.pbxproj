@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DB784EA520226B0000C979DC /* StoryDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB784EA420226B0000C979DC /* StoryDownloadOperation.swift */; };
 		DB8AEC312020BC0200E4B46B /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AEC302020BC0200E4B46B /* NetworkManager.swift */; };
 		DB8AEC332020BCD200E4B46B /* StoriesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AEC322020BCD200E4B46B /* StoriesService.swift */; };
 		DB8AEC352020C02A00E4B46B /* StorySource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AEC342020C02A00E4B46B /* StorySource.swift */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DB784EA420226B0000C979DC /* StoryDownloadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDownloadOperation.swift; sourceTree = "<group>"; };
 		DB8AEC302020BC0200E4B46B /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		DB8AEC322020BCD200E4B46B /* StoriesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesService.swift; sourceTree = "<group>"; };
 		DB8AEC342020C02A00E4B46B /* StorySource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySource.swift; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 				DB8AEC342020C02A00E4B46B /* StorySource.swift */,
 				DBFE5D402021B590003F87C6 /* SiteIconURLDecoder.swift */,
 				DBFE5D422021EC02003F87C6 /* HTMLToAttributedStringConverter.swift */,
+				DB784EA420226B0000C979DC /* StoryDownloadOperation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -212,6 +215,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBC6770620208C3900F97B5A /* AppDelegate.swift in Sources */,
+				DB784EA520226B0000C979DC /* StoryDownloadOperation.swift in Sources */,
 				DB8AEC312020BC0200E4B46B /* NetworkManager.swift in Sources */,
 				DB8AEC352020C02A00E4B46B /* StorySource.swift in Sources */,
 				DBC6770A20208CBD00F97B5A /* StoryDetailViewController.swift in Sources */,

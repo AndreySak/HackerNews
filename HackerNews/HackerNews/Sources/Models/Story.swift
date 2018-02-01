@@ -77,3 +77,13 @@ class Story : Codable {
         try? container.encode(text, forKey: .text)
     }
 }
+
+extension Story : Hashable {
+    var hashValue: Int {
+        return id
+    }
+    
+    static func ==(lhs: Story, rhs: Story) -> Bool {
+        return lhs.id == rhs.id
+    }
+}

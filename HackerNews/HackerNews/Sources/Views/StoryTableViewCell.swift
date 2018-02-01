@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StoryTableViewCell : UITableViewCell, StoryCellStateChaningDelegate {
+class StoryTableViewCell : UITableViewCell {
     private static let defaultSourceImage: UIImage = #imageLiteral(resourceName: "newspaper")
     
     @IBOutlet private weak var sourceImageView: UIImageView!
@@ -35,6 +35,7 @@ class StoryTableViewCell : UITableViewCell, StoryCellStateChaningDelegate {
         
         sourceImageView.layer.cornerRadius = 4.0
         sourceImageView.clipsToBounds = true
+        sourceImageView.image = StoryTableViewCell.defaultSourceImage
     }
     
     override func prepareForReuse() {
@@ -42,21 +43,5 @@ class StoryTableViewCell : UITableViewCell, StoryCellStateChaningDelegate {
         
         storyTitleLabel.text = nil
         sourceImageView.image = StoryTableViewCell.defaultSourceImage
-    }
-    
-    func didStoryTitleChanged(_ storyCellState: StoryCellState, withTitle title: String) {
-        DispatchQueue.main.async {
-            self.storyTitleLabel.text = title
-        }
-    }
-    
-    func didStorySourceImageChanged(_ storyCellState: StoryCellState, withImage image: UIImage?) {
-        DispatchQueue.main.async {
-            if let image = image {
-                self.sourceImageView.image = image
-            } else {
-                self.sourceImageView.image = StoryTableViewCell.defaultSourceImage
-            }
-        }
     }
 }

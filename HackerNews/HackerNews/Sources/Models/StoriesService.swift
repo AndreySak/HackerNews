@@ -49,7 +49,7 @@ class StoriesServiceImpl : StoriesService {
     
     func getStory(byStoryId storyId: Int, completion: @escaping (_ story: Story?) -> Swift.Void) -> RequestHanlder? {
         let storyURLString = "\(Constants.baseServerURL)/v0/item/\(storyId).json"
-        return networkManager.getRequest(withURLString: storyURLString) { (storyData, error) in
+        return networkManager.getRequest(withURLString: storyURLString) { (storyData, error) in            
             guard let storyData = storyData else {
                 completion(nil)
                 return
