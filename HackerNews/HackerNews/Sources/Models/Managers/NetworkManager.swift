@@ -9,10 +9,18 @@
 import Foundation
 
 protocol NetworkManager {
-    func getRequest(withURLString urlString: String,
+    func getRequest(withURLString urlString: String, cachePolicy: URLRequest.CachePolicy,
                     completion: @escaping(_ data: Data?, _ error: Error?) -> Swift.Void) -> RequestHanlder?
     func getImageRequest(withURLString urlString: String,
                          completion: @escaping(_ data: Data?, _ error: Error?) -> Swift.Void) -> RequestHanlder?
+}
+
+extension NetworkManager {
+    func getRequest(withURLString urlString: String, cachePolicy: URLRequest.CachePolicy = .returnCacheDataElseLoad,
+                    completion: @escaping(_ data: Data?, _ error: Error?) -> Swift.Void) -> RequestHanlder?
+    {
+        return getRequest(withURLString: urlString, cachePolicy: cachePolicy, completion: completion)
+    }
 }
 
 class RequestHanlder {
@@ -59,8 +67,10 @@ class NetworkManagerImpl : NetworkManager {
     // MARK: - NetworkManager
     
     func getRequest(withURLString urlString: String,
+                    cachePolicy: URLRequest.CachePolicy,
                     completion: @escaping (Data?, Error?) -> Swift.Void) -> RequestHanlder? {
-        return performRequest(withURLString: urlString, httpMethod: .get, completion: completion)
+        return performRequest(withURLString: urlString,
+                              httpMethod: .get, cachePolicy: cachePolicy, completion: completion)
     }
     
     func getImageRequest(withURLString urlString: String,

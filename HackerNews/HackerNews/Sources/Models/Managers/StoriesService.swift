@@ -31,7 +31,7 @@ class StoriesServiceImpl : StoriesService {
     func getStoriesList(storySource: StorySource, completion: @escaping (_ storyIds: [Int]?, _ error: Error?) -> Swift.Void) {
         let storiesPath = getStoriesPath(fromStorySource: storySource)
         let urlString = "\(Constants.baseServerURL)/\(storiesPath)"
-        _ = networkManager.getRequest(withURLString: urlString) { (responseData, error) in
+        _ = networkManager.getRequest(withURLString: urlString, cachePolicy: .reloadIgnoringLocalCacheData) { (responseData, error) in
             if let error = error {
                 completion(nil, error)
             } else if let storyIdsData = responseData {
