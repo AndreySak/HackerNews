@@ -54,7 +54,7 @@ class StoriesDownloadManager {
             let resultImage = storyImageDownloadOperation.resultImage
             completion(resultImage)
         }
-        storiesQueue.addOperation(storyImageDownloadOperation)
+        storiesImageQueue.addOperation(storyImageDownloadOperation)
     }
     
     func cancelDownloadStoryImage(withStoryURL storyURL: URL) {
@@ -67,7 +67,7 @@ class StoriesDownloadManager {
         }) else {
             return
         }
-        
+        print("storyImageDownloadOperation.cancel()")
         storyImageDownloadOperation.cancel()
     }
 }
